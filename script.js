@@ -26,7 +26,7 @@ async function fetchProductsFromSheet() {
         const response = await fetch(GOOGLE_SHEET_API);
         const rawData = await response.json();
         
-        // টাইপ কনভার্সন (সংখ্যা নিশ্চিত করা)
+        // টাইপ কনভার্সন ও ডাটা ম্যাপিং (description কলাম সহ)
         products = rawData.map(p => ({
             id: Number(p.id) || p.id,
             name: p.name || "",
@@ -34,7 +34,8 @@ async function fetchProductsFromSheet() {
             price: Number(p.price) || 0,
             oldPrice: p.oldPrice ? Number(p.oldPrice) : null,
             badge: p.badge || "",
-            image: p.image || "https://via.placeholder.com/400"
+            image: p.image || "https://via.placeholder.com/400",
+            description: p.description || "এই প্রোডাক্টের কোনো বিস্তারিত বিবরণ দেওয়া নেই।"
         }));
 
         displayProducts(products);
@@ -47,7 +48,7 @@ async function fetchProductsFromSheet() {
 }
 
 /* ==========================================================================
-   ৩. প্রোডাক্ট প্রদর্শন ও সার্চ/ফিল্টার (Display & Search/Filter)
+   ৩. প্রোডাক্ট প্রদর্শন (Display Products)
    ========================================================================== */
 
 function displayProducts(items) {
@@ -59,12 +60,13 @@ function displayProducts(items) {
         return;
     }
 
+    // ছবি বা নামে ক্লিক করলে openProductModal() কল হবে
     container.innerHTML = items.map(p => `
         <div class="product-card">
             ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
-            <img src="${p.image}" alt="${p.name}" class="product-img">
+            <img src="${p.image}" alt="${p.name}" class="product-img" onclick="openProductModal('${p.id}')" style="cursor:pointer;">
             <div>
-                <div class="product-title">${p.name}</div>
+                <div class="product-title" onclick="openProductModal('${p.id}')" style="cursor:pointer;">${p.name}</div>
                 <div class="price-box">
                     <span class="current-price">৳${p.price}</span>
                     ${p.oldPrice ? `<span class="old-price">৳${p.oldPrice}</span>` : ''}
@@ -99,8 +101,121 @@ function searchProducts() {
 }
 
 /* ==========================================================================
-  /* ==========================================================================
-   ৪. পপ-আপ নোটিফিকেশন (Top Notification Bar)
+   ৪. প্রোডাক্ট ডিটেইলস পপ-আপ মডাল (Product Details Modal)
+   ========================================================================== */
+
+function openProductModal(productId) {
+    const product = products.find(p => p.id == productId);
+    if (!product) return;
+
+    let modal = document.getElementById('productDetailModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'productDetailModal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 15px;
+            box-sizing: border-box;
+        `;
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <div style="
+            background: #ffffff;
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-sizing: border-box;
+        ">
+            <button onclick="closeProductModal()" style="
+                position: absolute;
+                top: 12px;
+                right: 15px;
+                background: #f3f4f6;
+                border: none;
+                font-size: 22px;
+                width: 35px;
+                height: 35px;
+                border-radius: 50%;
+                cursor: pointer;
+                color: #374151;
+                line-height: 1;
+            ">&times;</button>
+            
+            <img src="${product.image}" alt="${product.name}" style="
+                width: 100%;
+                max-height: 280px;
+                object-fit: contain;
+                border-radius: 8px;
+                margin-bottom: 15px;
+                background-color: #f9fafb;
+            ">
+            
+            <h3 style="font-size: 18px; color: #111827; margin-bottom: 8px;">${product.name}</h3>
+            
+            <div style="margin-bottom: 15px; font-size: 18px; font-weight: bold; color: #059669;">
+                ৳${product.price}
+                ${product.oldPrice ? `<span style="text-decoration: line-through; color: #9ca3af; font-size: 14px; margin-left: 8px;">৳${product.oldPrice}</span>` : ''}
+            </div>
+            
+            <div style="border-top: 1px solid #e5e7eb; padding-top: 12px;">
+                <h4 style="font-size: 15px; color: #374151; margin-bottom: 6px;">প্রোডাক্ট বিবরণ:</h4>
+                <p style="font-size: 14px; color: #4b5563; line-height: 1.6; white-space: pre-line;">${product.description}</p>
+            </div>
+            
+            <button onclick="addToCart('${product.id}'); closeProductModal();" style="
+                width: 100%;
+                margin-top: 20px;
+                padding: 12px;
+                background: #059669;
+                color: #ffffff;
+                border: none;
+                border-radius: 8px;
+                font-size: 15px;
+                font-weight: bold;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            ">
+                <i class="fa-solid fa-cart-plus"></i> কার্টে রাখুন
+            </button>
+        </div>
+    `;
+
+    modal.style.opacity = '1';
+    modal.style.pointerEvents = 'auto';
+}
+
+function closeProductModal() {
+    const modal = document.getElementById('productDetailModal');
+    if (modal) {
+        modal.style.opacity = '0';
+        modal.style.pointerEvents = 'none';
+    }
+}
+
+/* ==========================================================================
+   ৫. পপ-আপ নোটিফিকেশন (Top Notification Bar)
    ========================================================================== */
 
 function showToast(message) {
@@ -121,7 +236,7 @@ function showToast(message) {
             font-size: 14px;
             font-weight: 600;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            z-index: 99999;
+            z-index: 9999999;
             transition: all 0.3s ease-in-out;
             opacity: 0;
             pointer-events: none;
@@ -137,7 +252,6 @@ function showToast(message) {
     toast.style.opacity = '1';
     toast.style.transform = 'translate(-50%, 0)';
 
-    // ২ সেকেন্ড পর অটোমেটিক গায়েব হয়ে যাবে
     setTimeout(() => {
         toast.style.opacity = '0';
         toast.style.transform = 'translate(-50%, -20px)';
@@ -145,10 +259,12 @@ function showToast(message) {
 }
 
 /* ==========================================================================
-   ৫. শপিং কার্ট ও অর্ডার সিষ্টেম (Cart & Order System)
+   ৬. শপিং কার্ট ও অর্ডার সিস্টেম (Cart & Order System)
    ========================================================================== */
 
 function addToCart(productId) {
+    showToast('প্রোডাক্টটি সফলভাবে কার্টে যোগ হয়েছে!');
+
     const item = products.find(p => p.id == productId);
     if (!item) return;
 
@@ -161,9 +277,6 @@ function addToCart(productId) {
     }
     
     updateCartUI();
-    
-    // পপ-আপ নোটিফিকেশন মেসেজ দেখানো
-    showToast('প্রোডাক্টটি সফলভাবে কার্টে যোগ হয়েছে!');
 }
 
 function toggleCart(forceOpen = false) {
@@ -240,7 +353,7 @@ function updateTotal() {
 }
 
 /* ==========================================================================
-   ৬. হোয়াটসঅ্যাপে অর্ডার পাঠানো (WhatsApp Order)
+   ৭. হোয়াটসঅ্যাপে অর্ডার পাঠানো (WhatsApp Order)
    ========================================================================== */
 
 function sendWhatsAppOrder() {
@@ -288,7 +401,7 @@ function sendWhatsAppOrder() {
 }
 
 /* ==========================================================================
-   ৭. নেভিগেশন ও পলিসি মডাল (Navigation & Policy Modals)
+   ৮. নেভিগেশন ও পলিসি মডাল (Navigation & Policy Modals)
    ========================================================================== */
 
 function toggleMenu() {
@@ -344,7 +457,7 @@ function closePolicyModal() {
 }
 
 /* ==========================================================================
-   ৮. পেজ লোড ইভেন্ট (Init on DOM Loaded)
+   ৯. পেজ লোড ইভেন্ট (Init on DOM Loaded)
    ========================================================================== */
 
 document.addEventListener("DOMContentLoaded", function() {
