@@ -250,3 +250,11 @@ function closePolicyModal() {
     document.getElementById('policyModal').style.display = 'none';
     document.getElementById('policyOverlay').style.display = 'none';
 }
+// মোবাইল নেভিগেশন মেনু ওপেন ও ক্লোজ করা
+function toggleMenu() {
+    const navMenu = document.getElementById('navMenu');
+    if (navMenu) {
+        navMenu.classList.toggle('active');
+    }
+}
+
