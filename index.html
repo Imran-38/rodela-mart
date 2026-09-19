@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>রোদেলা মার্ট | Rodela Mart - RFL ক্রোকারিজ ও হোম আইটেম</title>
+    <meta name="description" content="রোদেলা মার্টে পান অরিজিনাল RFL ক্রোকারিজ, হটপট, ব্লেেন্ডার ও গৃহস্থালী পণ্য। দ্রুত হোম ডেলিভারি ও ক্যাশ অন ডেলিভারি সুবিধা।">
+    <meta name="keywords" content="রোদেলা মার্ট, Rodela Mart, RFL Crockeries, RFL Hotpot, Kitchenware BD, ক্রোকারিজ আইটেম, গৃহস্থালী সামগ্রী">
+    <meta name="author" content="Rodela Mart">
+
+    <!-- Open Graph for Facebook Sharing -->
+    <meta property="og:title" content="রোদেলা মার্ট - সেরা দামে RFL ক্রোকারিজ ও হোম আইটেম">
+    <meta property="og:description" content="অরিজিনাল RFL ক্রোকারিজ ও মানসম্মত কিচেন আইটেম অর্ডার করুন ঘরে বসেই।">
+    <meta property="og:type" content="website">
+
+    <!-- External CSS & Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="top-bar">
+        🚚 রোদেলা মার্টে পাচ্ছো সারা দেশে ক্যাশ অন ডেলিভারি সুবিধা!
+    </div>
+
+    <!-- Header & Navigation -->
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo"><i class="fa-solid fa-store"></i> রোদেলা মার্ট</a>
+            
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="প্রোডাক্ট খুঁজুন (যেমন: হটপট, ব্লেেন্ডার)...">
+            </div>
+
+            <div class="cart-icon" onclick="toggleCart()">
+                <i class="fa-solid fa-basket-shopping"></i>
+                <span class="cart-badge" id="cartCount">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>রোদেলা মার্টে আপনাকে স্বাগতম</h1>
+            <p>অরিজিনাল RFL ক্রোকারিজ ও নিত্যপ্রয়োজনীয় গৃহস্থালী পণ্য কিনুন সবচেয়ে সাশ্রয়ী দামে</p>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <main class="container">
+        <!-- Categories -->
+        <div class="category-tabs">
+            <button class="tab-btn active" onclick="filterCategory('all', event)">সব প্রোডাক্ট</button>
+            <button class="tab-btn" onclick="filterCategory('rfl', event)">RFL ক্রোকারিজ</button>
+            <button class="tab-btn" onclick="filterCategory('kitchen', event)">কিচেন সামগ্রী</button>
+            <button class="tab-btn" onclick="filterCategory('home', event)">গৃহস্থালী পণ্য</button>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="product-grid" id="productContainer">
+            <!-- JavaScript-এর মাধ্যমে প্রোডাক্ট লোড হবে -->
+        </div>
+    </main>
+
+    <!-- Sliding Cart Drawer -->
+    <div class="overlay" id="overlay" onclick="toggleCart()"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h3><i class="fa-solid fa-cart-shopping"></i> আপনার শপিং কার্ট</h3>
+            <span class="close-cart" onclick="toggleCart()"><i class="fa-solid fa-xmark fa-lg"></i></span>
+        </div>
+
+        <div class="cart-body">
+            <div id="cartItemsContainer">
+                <p class="empty-cart-msg">কার্ট ফাঁকা রয়েছে</p>
+            </div>
+
+            <!-- Checkout Form -->
+            <div class="checkout-form" id="checkoutForm" style="display:none;">
+                <h4>ডেলিভারি তথ্য দিন</h4>
+                <div class="form-group">
+                    <label>আপনার নাম *</label>
+                    <input type="text" id="custName" placeholder="সম্পূর্ণ নাম লিখুন">
+                </div>
+                <div class="form-group">
+                    <label>মোবাইল নম্বর *</label>
+                    <input type="tel" id="custPhone" placeholder="017XXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label>ফুল ঠিকানা *</label>
+                    <input type="text" id="custAddress" placeholder="বাসা/রোড নম্বর, থানা, জেলা">
+                </div>
+                <div class="form-group">
+                    <label>ডেলিভারি এরিয়া *</label>
+                    <select id="deliveryZone" onchange="updateTotal()">
+                        <option value="70">ঢাকার ভেতরে (৳৭০)</option>
+                        <option value="130">ঢাকার বাইরে (৳১৩০)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>পেমেন্ট মেথড</label>
+                    <select id="payMethod">
+                        <option value="Cash on Delivery">ক্যাশ অন ডেলিভারি</option>
+                        <option value="bKash">বিকাশ (bKash)</option>
+                        <option value="Nagad">নগদ (Nagad)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="cart-footer">
+            <div class="summary-line">
+                <span>পণ্য মূল্য:</span>
+                <span id="subTotal">৳0</span>
+            </div>
+            <div class="summary-line">
+                <span>ডেলিভারি চার্জ:</span>
+                <span id="deliveryCharge">৳0</span>
+            </div>
+            <div class="summary-line total-line">
+                <span>সর্বমোট:</span>
+                <span id="grandTotal">৳0</span>
+            </div>
+            <button class="whatsapp-btn" onclick="sendWhatsAppOrder()">
+                <i class="fa-brands fa-whatsapp fa-xl"></i> হোয়াটসঅ্যাপে অর্ডার করুন
+            </button>
+        </div>
+    </div>
+
+    <!-- External JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
