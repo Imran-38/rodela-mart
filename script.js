@@ -102,6 +102,7 @@ function searchProducts() {
    ৪. শপিং কার্ট ও অর্ডার সিষ্টেম (Cart & Order System)
    ========================================================================== */
 
+// কার্টে প্রোডাক্ট যোগ করার ফাংশন (অটো কার্ট ড্রয়ার ওপেন হওয়া বন্ধ করা হয়েছে)
 function addToCart(productId) {
     const item = products.find(p => p.id == productId);
     if (!item) return;
@@ -113,8 +114,9 @@ function addToCart(productId) {
     } else {
         cart.push({ ...item, qty: 1 });
     }
+    
     updateCartUI();
-    toggleCart(true);
+    // toggleCart(true); // <-- এই অংশটি তুলে দেওয়া হয়েছে যাতে চাপ দিলে কার্ট পেজ নিজে থেকে না খোলে
 }
 
 function toggleCart(forceOpen = false) {
