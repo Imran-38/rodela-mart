@@ -26,7 +26,6 @@ async function fetchProductsFromSheet() {
         const response = await fetch(GOOGLE_SHEET_API);
         const rawData = await response.json();
         
-        // টাইপ কনভার্সন ও ডাটা ম্যাপিং (description কলাম সহ)
         products = rawData.map(p => ({
             id: Number(p.id) || p.id,
             name: p.name || "",
@@ -60,7 +59,6 @@ function displayProducts(items) {
         return;
     }
 
-    // ছবি বা নামে ক্লিক করলে openProductModal() কল হবে
     container.innerHTML = items.map(p => `
         <div class="product-card">
             ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
@@ -215,7 +213,7 @@ function closeProductModal() {
 }
 
 /* ==========================================================================
-   ৫. পপ-আপ নোটিফিকেশন (Top Notification Bar)
+   ৫. পপ-আপ নোটিফিকেশন (Top Toast Notification)
    ========================================================================== */
 
 function showToast(message) {
@@ -259,7 +257,7 @@ function showToast(message) {
 }
 
 /* ==========================================================================
-   ৬. শপিং কার্ট ও অর্ডার সিস্টেম (Cart & Order System)
+   ৬. কার্ট ম্যানেজমেন্ট (Cart Operations)
    ========================================================================== */
 
 function addToCart(productId) {
@@ -298,33 +296,63 @@ function updateCartUI() {
     const cartCount = document.getElementById('cartCount');
     const checkoutForm = document.getElementById('checkoutForm');
 
+    if (checkoutForm) checkoutForm.style.display = 'none';
+
     if (cartCount) {
         cartCount.innerText = cart.reduce((sum, item) => sum + item.qty, 0);
     }
 
     if (cart.length === 0) {
-        if (container) container.innerHTML = '<p class="empty-cart-msg">কার্ট ফাঁকা রয়েছে</p>';
-        if (checkoutForm) checkoutForm.style.display = 'none';
-    } else {
-        if (checkoutForm) checkoutForm.style.display = 'block';
-        if (container) {
-            container.innerHTML = cart.map(item => `
-                <div class="cart-item">
-                    <img src="${item.image}" alt="${item.name}">
-                    <div style="flex-grow:1; margin:0 10px;">
-                        <div style="font-size:13px; font-weight:600;">${item.name}</div>
-                        <div style="color:var(--primary-color); font-weight:bold; font-size:13px;">৳${item.price} x ${item.qty}</div>
-                    </div>
-                    <div style="display:flex; gap:5px; align-items:center;">
-                        <button onclick="changeQty('${item.id}', -1)" style="padding:2px 8px; cursor:pointer;">-</button>
-                        <span>${item.qty}</span>
-                        <button onclick="changeQty('${item.id}', 1)" style="padding:2px 8px; cursor:pointer;">+</button>
-                    </div>
-                </div>
-            `).join('');
-        }
+        if (container) container.innerHTML = '<p style="text-align:center; padding:30px; color:#6b7280;">আপনার কার্ট ফাঁকা রয়েছে</p>';
+        return;
     }
-    updateTotal();
+
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+    if (container) {
+        container.innerHTML = `
+            <div style="padding-bottom:10px;">
+                ${cart.map(item => `
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid #f3f4f6;">
+                        <img src="${item.image}" alt="${item.name}" style="width:50px; height:50px; object-fit:cover; border-radius:6px;">
+                        <div style="flex-grow:1; margin:0 12px;">
+                            <div style="font-size:13px; font-weight:600; color:#111827;">${item.name}</div>
+                            <div style="color:#059669; font-weight:bold; font-size:13px; margin-top:2px;">৳${item.price} x ${item.qty} = ৳${item.price * item.qty}</div>
+                        </div>
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            <button onclick="changeQty('${item.id}', -1)" style="padding:2px 8px; background:#e5e7eb; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">-</button>
+                            <span style="font-size:14px; font-weight:600;">${item.qty}</span>
+                            <button onclick="changeQty('${item.id}', 1)" style="padding:2px 8px; background:#e5e7eb; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">+</button>
+                        </div>
+                    </div>
+                `).join('')}
+                
+                <div style="margin-top:20px; padding:15px; background:#f9fafb; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:15px; font-weight:bold; color:#374151;">মোট বিল:</span>
+                    <span style="font-size:18px; font-weight:bold; color:#059669;">৳${subtotal}</span>
+                </div>
+
+                <button onclick="openCheckoutModal()" style="
+                    width:100%;
+                    margin-top:15px;
+                    padding:12px;
+                    background:#059669;
+                    color:#ffffff;
+                    border:none;
+                    border-radius:8px;
+                    font-size:15px;
+                    font-weight:bold;
+                    cursor:pointer;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    gap:8px;
+                ">
+                    অর্ডার কনফার্ম করুন <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        `;
+    }
 }
 
 function changeQty(id, delta) {
@@ -338,39 +366,178 @@ function changeQty(id, delta) {
     updateCartUI();
 }
 
-function updateTotal() {
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const deliverySelect = document.getElementById('deliveryZone');
-    const delivery = (cart.length > 0 && deliverySelect) ? parseInt(deliverySelect.value) : 0;
-    
-    const subTotalElem = document.getElementById('subTotal');
-    const deliveryChargeElem = document.getElementById('deliveryCharge');
-    const grandTotalElem = document.getElementById('grandTotal');
-
-    if (subTotalElem) subTotalElem.innerText = `৳${subtotal}`;
-    if (deliveryChargeElem) deliveryChargeElem.innerText = `৳${delivery}`;
-    if (grandTotalElem) grandTotalElem.innerText = `৳${subtotal + delivery}`;
-}
-
 /* ==========================================================================
-   ৭. হোয়াটসঅ্যাপে অর্ডার পাঠানো (WhatsApp Order)
+   ৭. পার্সোনাল ডিটেইলস পপ-আপ মডাল (Personal Details Checkout Modal)
    ========================================================================== */
 
-function sendWhatsAppOrder() {
+function openCheckoutModal() {
     if (cart.length === 0) {
         alert('আপনার কার্ট ফাঁকা রয়েছে!');
         return;
     }
 
-    const name = document.getElementById('custName').value.trim();
-    const phone = document.getElementById('custPhone').value.trim();
-    const address = document.getElementById('custAddress').value.trim();
-    const zoneSelect = document.getElementById('deliveryZone');
+    // কার্ট ড্রয়ার বন্ধ করা
+    toggleCart(false);
+
+    let modal = document.getElementById('checkoutModalPopup');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'checkoutModalPopup';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 15px;
+            box-sizing: border-box;
+        `;
+        document.body.appendChild(modal);
+    }
+
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const defaultDelivery = 60; // ঢাকার ভেতরে ডিফল্ট চার্জ
+
+    modal.innerHTML = `
+        <div style="
+            background: #ffffff;
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 12px;
+            padding: 22px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-sizing: border-box;
+        ">
+            <button onclick="closeCheckoutModal()" style="
+                position: absolute;
+                top: 12px;
+                right: 15px;
+                background: #f3f4f6;
+                border: none;
+                font-size: 22px;
+                width: 35px;
+                height: 35px;
+                border-radius: 50%;
+                cursor: pointer;
+                color: #374151;
+                line-height: 1;
+            ">&times;</button>
+            
+            <h3 style="font-size: 18px; color: #111827; margin-bottom: 15px; text-align:center; border-bottom: 2px solid #059669; padding-bottom: 8px;">
+                📋 আপনার ডেলিভারি তথ্য দিন
+            </h3>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div>
+                    <label style="font-size: 13px; font-weight: bold; color: #374151; display:block; margin-bottom:4px;">আপনার নাম *</label>
+                    <input type="text" id="modalCustName" placeholder="সম্পূর্ণ নাম লিখুন" style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px; box-sizing:border-box; font-size:14px;">
+                </div>
+
+                <div>
+                    <label style="font-size: 13px; font-weight: bold; color: #374151; display:block; margin-bottom:4px;">মোবাইল নম্বর *</label>
+                    <input type="tel" id="modalCustPhone" placeholder="১১ ডিজিটের মোবাইল নম্বর" style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px; box-sizing:border-box; font-size:14px;">
+                </div>
+
+                <div>
+                    <label style="font-size: 13px; font-weight: bold; color: #374151; display:block; margin-bottom:4px;">সম্পূর্ণ ঠিকানা *</label>
+                    <textarea id="modalCustAddress" rows="2" placeholder="বাড়ি নম্বর, রোড নম্বর, এলাকা..." style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px; box-sizing:border-box; font-size:14px;"></textarea>
+                </div>
+
+                <div>
+                    <label style="font-size: 13px; font-weight: bold; color: #374151; display:block; margin-bottom:4px;">ডেলিভারি এলাকা *</label>
+                    <select id="modalDeliveryZone" onchange="updateModalBill()" style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px; box-sizing:border-box; font-size:14px;">
+                        <option value="60">ঢাকার ভেতরে (৳৬০)</option>
+                        <option value="120">ঢাকার বাইরে (৳১২০)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="font-size: 13px; font-weight: bold; color: #374151; display:block; margin-bottom:4px;">পেমেন্ট পদ্ধতি</label>
+                    <select id="modalPayMethod" style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px; box-sizing:border-box; font-size:14px;">
+                        <option value="Cash on Delivery">ক্যাশ অন ডেলিভারি (পণ্য পেয়ে টাকা দিন)</option>
+                        <option value="bKash / Nagad">বিকাশ / নগদ (অগ্রিম পেমেন্ট)</option>
+                    </select>
+                </div>
+
+                <!-- বিল সামারি -->
+                <div style="background:#f9fafb; padding:12px; border-radius:8px; margin-top:5px; font-size:14px;">
+                    <div style="display:flex; justify-style:space-between; margin-bottom:4px;">
+                        <span>পণ্যের দাম:</span>
+                        <span style="font-weight:bold;">৳<span id="modalSubtotal">${subtotal}</span></span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                        <span>ডেলিভারি চার্জ:</span>
+                        <span style="font-weight:bold;">৳<span id="modalDeliveryCharge">${defaultDelivery}</span></span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; border-top:1px solid #e5e7eb; padding-top:6px; font-weight:bold; color:#059669; font-size:16px;">
+                        <span>সর্বমোট:</span>
+                        <span>৳<span id="modalGrandTotal">${subtotal + defaultDelivery}</span></span>
+                    </div>
+                </div>
+
+                <button onclick="submitModalOrder()" style="
+                    width: 100%;
+                    margin-top: 10px;
+                    padding: 12px;
+                    background: #25D366;
+                    color: #ffffff;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 15px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                ">
+                    <i class="fa-brands fa-whatsapp" style="font-size:18px;"></i> অর্ডার সম্পন্ন করুন
+                </button>
+            </div>
+        </div>
+    `;
+
+    modal.style.opacity = '1';
+    modal.style.pointerEvents = 'auto';
+}
+
+function closeCheckoutModal() {
+    const modal = document.getElementById('checkoutModalPopup');
+    if (modal) {
+        modal.style.opacity = '0';
+        modal.style.pointerEvents = 'none';
+    }
+}
+
+function updateModalBill() {
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const deliveryCharge = parseInt(document.getElementById('modalDeliveryZone').value);
+    
+    document.getElementById('modalDeliveryCharge').innerText = deliveryCharge;
+    document.getElementById('modalGrandTotal').innerText = subtotal + deliveryCharge;
+}
+
+function submitModalOrder() {
+    const name = document.getElementById('modalCustName').value.trim();
+    const phone = document.getElementById('modalCustPhone').value.trim();
+    const address = document.getElementById('modalCustAddress').value.trim();
+    const zoneSelect = document.getElementById('modalDeliveryZone');
     const zone = zoneSelect.options[zoneSelect.selectedIndex].text;
-    const pay = document.getElementById('payMethod').value;
+    const pay = document.getElementById('modalPayMethod').value;
 
     if (!name || !phone || !address) {
-        alert('অনুগ্রহ করে আপনার নাম, মোবাইল নম্বর এবং সম্পূর্ণ ঠিকানা প্রবেশ করান।');
+        alert('অনুগ্রহ করে নাম, মোবাইল নম্বর এবং সম্পূর্ণ ঠিকানা পূরণ করুন।');
         return;
     }
 
