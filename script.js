@@ -1,64 +1,61 @@
 /* ==========================================================================
-   ১. কনফিগারেশন ও প্রোডাক্ট ডাটা (Configuration & Product List)
+   ১. কনফিগারেশন ও গুগল শীট লিংক (Configuration)
    ========================================================================== */
 
-// ⚠️ আপনার আসল হোয়াটসঅ্যাপ নম্বর
+// আপনার হোয়াটসঅ্যাপ নম্বর
 const MY_WHATSAPP_NUMBER = "8801517851338"; 
 
-// প্রোডাক্ট লিস্ট (প্রয়োজন অনুযায়ী নতুন প্রোডাক্ট যোগ করতে পারেন)
-const products = [
-    {
-        id: 1,
-        name: "RFL Italiano Hotpot 2500ml",
-        category: "rfl",
-        price: 850,
-        oldPrice: 1000,
-        badge: "RFL Original",
-        image: "https://placehold.co/400x400/059669/white?text=RFL+Hotpot"
-    },
-    {
-        id: 2,
-        name: "RFL Smart Water Jug 2L",
-        category: "rfl",
-        price: 320,
-        oldPrice: 400,
-        badge: "RFL Original",
-        image: "https://placehold.co/400x400/059669/white?text=RFL+Jug"
-    },
-    {
-        id: 3,
-        name: "Electric Blender 750W",
-        category: "kitchen",
-        price: 2450,
-        oldPrice: 2800,
-        badge: "Popular",
-        image: "https://placehold.co/400x400/059669/white?text=Blender"
-    },
-    {
-        id: 4,
-        name: "Non-Stick Cookware Set",
-        category: "kitchen",
-        price: 1850,
-        oldPrice: 2200,
-        badge: "Best Offer",
-        image: "https://placehold.co/400x400/059669/white?text=Cookware"
-    }
-];
+// আপনার গুগল অ্যাপস স্ক্রিপ্ট Web App URL
+const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbwcA835WsS_PyjAM598bSz0plGH4bg8sWb3-DBlqtuyj7qLRHmHFjqlXPZGIsrHVkHzEw/exec";
 
-// শপিং কার্ট অ্যারেই
+// ডাটা রাখার গ্লোবাল অ্যারেই
+let products = [];
 let cart = [];
 
 /* ==========================================================================
-   ২. প্রোডাক্ট প্রদর্শন ও সার্চ/ফিল্টার (Display & Search/Filter)
+   ২. গুগল শীট থেকে ডাটা ফেচ করা (Fetch Products from Google Sheet)
    ========================================================================== */
 
-// প্রোডাক্ট ব্রাউজারে রেন্ডার করা
+async function fetchProductsFromSheet() {
+    const container = document.getElementById('productContainer');
+    if (container) {
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; font-weight: bold;">প্রোডাক্ট লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</p>';
+    }
+
+    try {
+        const response = await fetch(GOOGLE_SHEET_API);
+        const rawData = await response.json();
+        
+        // টাইপ কনভার্সন (সংখ্যা নিশ্চিত করা)
+        products = rawData.map(p => ({
+            id: Number(p.id) || p.id,
+            name: p.name || "",
+            category: p.category || "all",
+            price: Number(p.price) || 0,
+            oldPrice: p.oldPrice ? Number(p.oldPrice) : null,
+            badge: p.badge || "",
+            image: p.image || "https://via.placeholder.com/400"
+        }));
+
+        displayProducts(products);
+    } catch (error) {
+        console.error("ডাটা লোড করতে সমস্যা হয়েছে:", error);
+        if (container) {
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red; padding: 40px;">প্রোডাক্ট লোড করা সম্ভব হয়নি। গুগল শীটে প্রোডাক্ট দেওয়া আছে কিনা নিশ্চিত করুন।</p>';
+        }
+    }
+}
+
+/* ==========================================================================
+   ৩. প্রোডাক্ট প্রদর্শন ও সার্চ/ফিল্টার (Display & Search/Filter)
+   ========================================================================== */
+
 function displayProducts(items) {
     const container = document.getElementById('productContainer');
     if (!container) return;
     
     if (items.length === 0) {
-        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 20px;">কোনো প্রোডাক্ট পাওয়া যায়নি!</p>';
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 30px;">কোনো প্রোডাক্ট পাওয়া যায়নি!</p>';
         return;
     }
 
@@ -73,17 +70,17 @@ function displayProducts(items) {
                     ${p.oldPrice ? `<span class="old-price">৳${p.oldPrice}</span>` : ''}
                 </div>
             </div>
-            <button class="add-cart-btn" onclick="addToCart(${p.id})">
+            <button class="add-cart-btn" onclick="addToCart('${p.id}')">
                 <i class="fa-solid fa-cart-plus"></i> কার্টে রাখুন
             </button>
         </div>
     `).join('');
 }
 
-// ক্যাটাগরি অনুযায়ী ফিল্টার করা
+// ক্যাটাগরি ফিল্টার
 function filterCategory(cat, event) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    if (event && event.target.classList.contains('tab-btn')) {
+    if (event && event.target && event.target.classList.contains('tab-btn')) {
         event.target.classList.add('active');
     }
     
@@ -102,13 +99,14 @@ function searchProducts() {
 }
 
 /* ==========================================================================
-   ৩. শপিং কার্ট ও অর্ডার লজিক (Cart & Order System)
+   ৪. শপিং কার্ট ও অর্ডার সিষ্টেম (Cart & Order System)
    ========================================================================== */
 
-// কার্টে আইটেম যুক্ত করা
 function addToCart(productId) {
-    const item = products.find(p => p.id === productId);
-    const exist = cart.find(c => c.id === productId);
+    const item = products.find(p => p.id == productId);
+    if (!item) return;
+
+    const exist = cart.find(c => c.id == productId);
 
     if (exist) {
         exist.qty += 1;
@@ -119,7 +117,6 @@ function addToCart(productId) {
     toggleCart(true);
 }
 
-// কার্ট স্লাইডার ওপেন/ক্লোজ করা
 function toggleCart(forceOpen = false) {
     const drawer = document.getElementById('cartDrawer');
     const overlay = document.getElementById('overlay');
@@ -134,7 +131,6 @@ function toggleCart(forceOpen = false) {
     }
 }
 
-// কার্ট ইন্টারফেস ও মোট হিসাব আপডেট করা
 function updateCartUI() {
     const container = document.getElementById('cartItemsContainer');
     const cartCount = document.getElementById('cartCount');
@@ -158,9 +154,9 @@ function updateCartUI() {
                         <div style="color:var(--primary-color); font-weight:bold; font-size:13px;">৳${item.price} x ${item.qty}</div>
                     </div>
                     <div style="display:flex; gap:5px; align-items:center;">
-                        <button onclick="changeQty(${item.id}, -1)" style="padding:2px 8px; cursor:pointer;">-</button>
+                        <button onclick="changeQty('${item.id}', -1)" style="padding:2px 8px; cursor:pointer;">-</button>
                         <span>${item.qty}</span>
-                        <button onclick="changeQty(${item.id}, 1)" style="padding:2px 8px; cursor:pointer;">+</button>
+                        <button onclick="changeQty('${item.id}', 1)" style="padding:2px 8px; cursor:pointer;">+</button>
                     </div>
                 </div>
             `).join('');
@@ -169,19 +165,17 @@ function updateCartUI() {
     updateTotal();
 }
 
-// কার্ট প্রোডাক্টের সংখ্যা বাড়ানো/কমানো
 function changeQty(id, delta) {
-    const item = cart.find(c => c.id === id);
+    const item = cart.find(c => c.id == id);
     if (item) {
         item.qty += delta;
         if (item.qty <= 0) {
-            cart = cart.filter(c => c.id !== id);
+            cart = cart.filter(c => c.id != id);
         }
     }
     updateCartUI();
 }
 
-// মোট বিল হিসাব করা
 function updateTotal() {
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
     const deliverySelect = document.getElementById('deliveryZone');
@@ -197,7 +191,7 @@ function updateTotal() {
 }
 
 /* ==========================================================================
-   ৪. হোয়াটসঅ্যাপে অর্ডার পাঠানো (Send WhatsApp Order)
+   ৫. হোয়াটসঅ্যাপে অর্ডার পাঠানো (WhatsApp Order)
    ========================================================================== */
 
 function sendWhatsAppOrder() {
@@ -245,10 +239,9 @@ function sendWhatsAppOrder() {
 }
 
 /* ==========================================================================
-   ৫. নেভিগেশন ও পলিসি মডাল ফাংশন (Navigation & Policy Modals)
+   ৬. নেভিগেশন ও পলিসি মডাল ফাংশন (Navigation & Policy Modals)
    ========================================================================== */
 
-// মোবাইল মেনু টগল করা (Open / Close)
 function toggleMenu() {
     const navMenu = document.getElementById('navMenu');
     if (navMenu) {
@@ -256,7 +249,6 @@ function toggleMenu() {
     }
 }
 
-// পলিসি ডাটা
 const policyData = {
     refund: {
         title: "রিটার্ন ও রিফান্ড পলিসি",
@@ -281,7 +273,6 @@ const policyData = {
     }
 };
 
-// পলিসি পপ-আপ খোলা
 function openPolicyModal(type) {
     const modal = document.getElementById('policyModal');
     const overlay = document.getElementById('policyOverlay');
@@ -296,7 +287,6 @@ function openPolicyModal(type) {
     }
 }
 
-// পলিসি পপ-আপ বন্ধ করা
 function closePolicyModal() {
     const modal = document.getElementById('policyModal');
     const overlay = document.getElementById('policyOverlay');
@@ -305,8 +295,9 @@ function closePolicyModal() {
 }
 
 /* ==========================================================================
-   ৬. পেজ লোড ইভেন্ট (Init on DOM Loaded)
+   ৭. পেজ লোড ইভেন্ট (Init on DOM Loaded)
    ========================================================================== */
+
 document.addEventListener("DOMContentLoaded", function() {
-    displayProducts(products);
+    fetchProductsFromSheet();
 });
