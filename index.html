@@ -27,22 +27,40 @@
         🚚 রোদেলা মার্টে পাচ্ছো সারা দেশে ক্যাশ অন ডেলিভারি সুবিধা!
     </div>
 
-    <!-- Header & Navigation -->
+        <!-- Header & Navigation Bar -->
     <header>
         <div class="nav-container">
+            <!-- Mobile Menu Toggle Button -->
+            <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            
+            <!-- Logo -->
             <a href="#" class="logo"><i class="fa-solid fa-store"></i> রোদেলা মার্ট</a>
             
+            <!-- Menu Links -->
+            <nav class="nav-menu" id="navMenu">
+                <a href="#" class="nav-link active"><i class="fa-solid fa-house"></i> হোম</a>
+                <a href="javascript:void(0)" onclick="filterCategory('all', event); toggleMenu();" class="nav-link">সব প্রোডাক্ট</a>
+                <a href="javascript:void(0)" onclick="filterCategory('rfl', event); toggleMenu();" class="nav-link">RFL ক্রোকারিজ</a>
+                <a href="javascript:void(0)" onclick="filterCategory('kitchen', event); toggleMenu();" class="nav-link">কিচেন সামগ্রী</a>
+                <a href="javascript:void(0)" onclick="filterCategory('home', event); toggleMenu();" class="nav-link">গৃহস্থালী পণ্য</a>
+            </nav>
+
+            <!-- Search Box -->
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="প্রোডাক্ট খুঁজুন (যেমন: হটপট, ব্লেেন্ডার)...">
+                <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="খুঁজুন...">
             </div>
 
+            <!-- Cart Icon -->
             <div class="cart-icon" onclick="toggleCart()">
                 <i class="fa-solid fa-basket-shopping"></i>
                 <span class="cart-badge" id="cartCount">0</span>
             </div>
         </div>
     </header>
+
 
     <!-- Hero Banner -->
     <section class="hero">
