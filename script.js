@@ -99,10 +99,54 @@ function searchProducts() {
 }
 
 /* ==========================================================================
-   ৪. শপিং কার্ট ও অর্ডার সিষ্টেম (Cart & Order System)
+   ৪. পপ-আপ নোটিফিকেশন (Toast Notification Message)
    ========================================================================== */
 
-// কার্টে প্রোডাক্ট যোগ করার ফাংশন (অটো কার্ট ড্রয়ার ওপেন হওয়া বন্ধ করা হয়েছে)
+function showToast(message) {
+    let toast = document.getElementById('toastNotification');
+    
+    // যদি এইচটিএমএল-এ নোটিফিকেশন বক্স না থাকে তবে তৈরি করবে
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toastNotification';
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            background-color: #059669;
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 99999;
+            transition: all 0.3s ease-in-out;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        `;
+        document.body.appendChild(toast);
+    }
+
+    toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${message}`;
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+
+    // ২ সেকেন্ড (২০০০ মিলি-সেকেন্ড) পর অটোমেটিক হাইড হয়ে যাবে
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+    }, 2000);
+}
+
+/* ==========================================================================
+   ৫. শপিং কার্ট ও অর্ডার সিষ্টেম (Cart & Order System)
+   ========================================================================== */
+
 function addToCart(productId) {
     const item = products.find(p => p.id == productId);
     if (!item) return;
@@ -116,7 +160,9 @@ function addToCart(productId) {
     }
     
     updateCartUI();
-    // toggleCart(true); // <-- এই অংশটি তুলে দেওয়া হয়েছে যাতে চাপ দিলে কার্ট পেজ নিজে থেকে না খোলে
+    
+    // পপ-আপ নোটিফিকেশন মেসেজ দেখানো
+    showToast('প্রোডাক্টটি সফলভাবে কার্টে যোগ হয়েছে!');
 }
 
 function toggleCart(forceOpen = false) {
@@ -193,7 +239,7 @@ function updateTotal() {
 }
 
 /* ==========================================================================
-   ৫. হোয়াটসঅ্যাপে অর্ডার পাঠানো (WhatsApp Order)
+   ৬. হোয়াটসঅ্যাপে অর্ডার পাঠানো (WhatsApp Order)
    ========================================================================== */
 
 function sendWhatsAppOrder() {
@@ -241,7 +287,7 @@ function sendWhatsAppOrder() {
 }
 
 /* ==========================================================================
-   ৬. নেভিগেশন ও পলিসি মডাল ফাংশন (Navigation & Policy Modals)
+   ৭. নেভিগেশন ও পলিসি মডাল (Navigation & Policy Modals)
    ========================================================================== */
 
 function toggleMenu() {
@@ -297,7 +343,7 @@ function closePolicyModal() {
 }
 
 /* ==========================================================================
-   ৭. পেজ লোড ইভেন্ট (Init on DOM Loaded)
+   ৮. পেজ লোড ইভেন্ট (Init on DOM Loaded)
    ========================================================================== */
 
 document.addEventListener("DOMContentLoaded", function() {
