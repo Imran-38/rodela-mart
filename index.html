@@ -136,4 +136,59 @@
     <!-- External JavaScript -->
     <script src="script.js"></script>
 </body>
+    <!-- Footer Section -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Column 1: Company Info -->
+            <div class="footer-col">
+                <h3 class="footer-title"><i class="fa-solid fa-store"></i> রোদেলা মার্ট</h3>
+                <p class="about-text">
+                    রোদেলা মার্ট (Rodela Mart) হলো অরিজিনাল RFL ক্রোকারিজ ও নিত্যপ্রয়োজনীয় মানসম্মত গৃহস্থালী পণ্যের নির্ভরযোগ্য ই-কমার্স প্রতিষ্ঠান। আমরা সাশ্রয়ী দামে সেরা পণ্য ও দ্রুত ডেলিভারি নিশ্চিত করতে প্রতিশ্রুতিবদ্ধ।
+                </p>
+                <div class="social-links">
+                    <a href="https://facebook.com" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://youtube.com" target="_blank" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <!-- Column 2: Important Policies -->
+            <div class="footer-col">
+                <h4 class="footer-subtitle">জরুরি পলিসি</h4>
+                <ul class="footer-links">
+                    <li><a href="javascript:void(0)" onclick="openPolicyModal('refund')">রিটার্ন ও রিফান্ড পলিসি</a></li>
+                    <li><a href="javascript:void(0)" onclick="openPolicyModal('privacy')">প্রাইভেসি পলিসি</a></li>
+                    <li><a href="javascript:void(0)" onclick="openPolicyModal('terms')">টার্মস অ্যান্ড কন্ডিশনস</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 3: Customer Support -->
+            <div class="footer-col">
+                <h4 class="footer-subtitle">কাস্টমার সাপোর্ট</h4>
+                <ul class="contact-info">
+                    <li><i class="fa-solid fa-headset"></i> হেল্পলাইন: 01700000000</li>
+                    <li><i class="fa-solid fa-envelope"></i> ইমেইল: support@rodelamart.com</li>
+                    <li><i class="fa-solid fa-clock"></i> সময়: সকাল ৯টা - রাত ১০টা</li>
+                    <li><i class="fa-brands fa-whatsapp"></i> সরাসরি চ্যাট: <a href="https://wa.me/8801700000000" target="_blank" style="color:var(--accent-color); text-decoration:underline;">হোয়াটসঅ্যাপ</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 Rodela Mart. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Policy Modals (Popup Windows) -->
+    <div class="policy-modal-overlay" id="policyOverlay" onclick="closePolicyModal()"></div>
+    <div class="policy-modal" id="policyModal">
+        <div class="policy-modal-header">
+            <h3 id="policyModalTitle">পলিসি শিরোনাম</h3>
+            <span onclick="closePolicyModal()" style="cursor:pointer;"><i class="fa-solid fa-xmark fa-lg"></i></span>
+        </div>
+        <div class="policy-modal-body" id="policyModalContent">
+            <!-- JavaScript-এর মাধ্যমে পলিসির তথ্য দেখাবে -->
+        </div>
+    </div>
+
 </html>
