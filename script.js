@@ -1,7 +1,7 @@
-// ⚠️ আপনার আসল ওয়াটসঅ্যাপ নম্বরটি এখানে লিখুন (যেমন: +8801517851338)
-const MY_WHATSAPP_NUMBER = "+8801517851338; 
+// ⚠️ আপনার আসল ওয়াটসঅ্যাপ নম্বরটি এখানে লিখুন (যেমন: 8801700000000)
+const MY_WHATSAPP_NUMBER = "8801700000000"; 
 
-// প্রোডাক্ট লিস্ট (ইচ্ছেমতো কাস্টমাইজ বা যোগ করা যাবে)
+// প্রোডাক্ট লিস্ট (আপনার ছবির নাম বা লিংক এখানে বসাবেন)
 const products = [
     {
         id: 1,
@@ -10,7 +10,7 @@ const products = [
         price: 850,
         oldPrice: 1000,
         badge: "RFL Original",
-        image: "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=400"
+        image: "https://placehold.co/400x400/059669/white?text=RFL+Hotpot"
     },
     {
         id: 2,
@@ -19,43 +19,25 @@ const products = [
         price: 320,
         oldPrice: 400,
         badge: "RFL Original",
-        image: "https://images.unsplash.com/photo-1544816155-12df9643f363?w=400"
+        image: "https://placehold.co/400x400/059669/white?text=RFL+Jug"
     },
     {
         id: 3,
-        name: "Electric Stainless Steel Blender 750W",
+        name: "Electric Blender 750W",
         category: "kitchen",
         price: 2450,
         oldPrice: 2800,
         badge: "Popular",
-        image: "https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=400"
+        image: "https://placehold.co/400x400/059669/white?text=Blender"
     },
     {
         id: 4,
-        name: "Non-Stick Cookware Set (3 Pcs)",
+        name: "Non-Stick Cookware Set",
         category: "kitchen",
         price: 1850,
         oldPrice: 2200,
         badge: "Best Offer",
-        image: "https://images.unsplash.com/photo-1583778176476-4a8b02a64c01?w=400"
-    },
-    {
-        id: 5,
-        name: "RFL Multi-Layer Tiffin Box",
-        category: "rfl",
-        price: 480,
-        oldPrice: 550,
-        badge: "RFL Original",
-        image: "https://images.unsplash.com/photo-1590402494682-cd3fb53b1f70?w=400"
-    },
-    {
-        id: 6,
-        name: "Multipurpose Plastic Storage Rack",
-        category: "home",
-        price: 950,
-        oldPrice: 1200,
-        badge: "New",
-        image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=400"
+        image: "https://placehold.co/400x400/059669/white?text=Cookware"
     }
 ];
 
@@ -64,6 +46,8 @@ let cart = [];
 // প্রোডাক্ট ব্রাউজারে রেন্ডার করা
 function displayProducts(items) {
     const container = document.getElementById('productContainer');
+    if(!container) return;
+    
     container.innerHTML = items.map(p => `
         <div class="product-card">
             ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
@@ -125,7 +109,7 @@ function toggleCart(forceOpen = false) {
     }
 }
 
-// কার্ট ড্যাশবোর্ড আপডেট করা
+// কার্ট আপডেট করা
 function updateCartUI() {
     const container = document.getElementById('cartItemsContainer');
     const cartCount = document.getElementById('cartCount');
@@ -175,7 +159,7 @@ function updateTotal() {
     document.getElementById('grandTotal').innerText = `৳${subtotal + delivery}`;
 }
 
-// হোয়াটসঅ্যাপে মেসেজ রেডি করে পাঠানো
+// হোয়াটসঅ্যাপে অর্ডার পাঠানো
 function sendWhatsAppOrder() {
     if (cart.length === 0) {
         alert('আপনার কার্ট ফাঁকা রয়েছে!');
@@ -219,6 +203,7 @@ function sendWhatsAppOrder() {
     window.open(url, '_blank');
 }
 
-// সাইট লোড হলে প্রোডাক্ট শো করা
-displayProducts(products);
-      
+// পেজ লোড হলে প্রোডাক্ট প্রদর্শন
+document.addEventListener("DOMContentLoaded", function() {
+    displayProducts(products);
+});
