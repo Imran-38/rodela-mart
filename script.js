@@ -1,7 +1,11 @@
-// ⚠️ আপনার আসল ওয়াটসঅ্যাপ নম্বরটি এখানে লিখুন (যেমন: 8801700000000)
-const MY_WHATSAPP_NUMBER = "8801700000000"; 
+/* ==========================================================================
+   ১. কনফিগারেশন ও প্রোডাক্ট ডাটা (Configuration & Product List)
+   ========================================================================== */
 
-// প্রোডাক্ট লিস্ট (আপনার ছবির নাম বা লিংক এখানে বসাবেন)
+// ⚠️ আপনার আসল হোয়াটসঅ্যাপ নম্বর
+const MY_WHATSAPP_NUMBER = "8801517851338"; 
+
+// প্রোডাক্ট লিস্ট (প্রয়োজন অনুযায়ী নতুন প্রোডাক্ট যোগ করতে পারেন)
 const products = [
     {
         id: 1,
@@ -41,13 +45,23 @@ const products = [
     }
 ];
 
+// শপিং কার্ট অ্যারেই
 let cart = [];
+
+/* ==========================================================================
+   ২. প্রোডাক্ট প্রদর্শন ও সার্চ/ফিল্টার (Display & Search/Filter)
+   ========================================================================== */
 
 // প্রোডাক্ট ব্রাউজারে রেন্ডার করা
 function displayProducts(items) {
     const container = document.getElementById('productContainer');
-    if(!container) return;
+    if (!container) return;
     
+    if (items.length === 0) {
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 20px;">কোনো প্রোডাক্ট পাওয়া যায়নি!</p>';
+        return;
+    }
+
     container.innerHTML = items.map(p => `
         <div class="product-card">
             ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
@@ -66,21 +80,30 @@ function displayProducts(items) {
     `).join('');
 }
 
-// ক্যাটাগরি ফিল্টার
+// ক্যাটাগরি অনুযায়ী ফিল্টার করা
 function filterCategory(cat, event) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    if (event) event.target.classList.add('active');
+    if (event && event.target.classList.contains('tab-btn')) {
+        event.target.classList.add('active');
+    }
     
-    if (cat === 'all') displayProducts(products);
-    else displayProducts(products.filter(p => p.category === cat));
+    if (cat === 'all') {
+        displayProducts(products);
+    } else {
+        displayProducts(products.filter(p => p.category === cat));
+    }
 }
 
 // লাইভ প্রোডাক্ট সার্চ
 function searchProducts() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
+    const query = document.getElementById('searchInput').value.toLowerCase().trim();
     const filtered = products.filter(p => p.name.toLowerCase().includes(query));
     displayProducts(filtered);
 }
+
+/* ==========================================================================
+   ৩. শপিং কার্ট ও অর্ডার লজিক (Cart & Order System)
+   ========================================================================== */
 
 // কার্টে আইটেম যুক্ত করা
 function addToCart(productId) {
@@ -100,6 +123,8 @@ function addToCart(productId) {
 function toggleCart(forceOpen = false) {
     const drawer = document.getElementById('cartDrawer');
     const overlay = document.getElementById('overlay');
+    if (!drawer || !overlay) return;
+
     if (forceOpen) {
         drawer.classList.add('open');
         overlay.classList.add('show');
@@ -109,36 +134,42 @@ function toggleCart(forceOpen = false) {
     }
 }
 
-// কার্ট আপডেট করা
+// কার্ট ইন্টারফেস ও মোট হিসাব আপডেট করা
 function updateCartUI() {
     const container = document.getElementById('cartItemsContainer');
     const cartCount = document.getElementById('cartCount');
     const checkoutForm = document.getElementById('checkoutForm');
 
-    cartCount.innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+    if (cartCount) {
+        cartCount.innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+    }
 
     if (cart.length === 0) {
-        container.innerHTML = '<p class="empty-cart-msg">কার্ট ফাঁকা রয়েছে</p>';
-        checkoutForm.style.display = 'none';
+        if (container) container.innerHTML = '<p class="empty-cart-msg">কার্ট ফাঁকা রয়েছে</p>';
+        if (checkoutForm) checkoutForm.style.display = 'none';
     } else {
-        checkoutForm.style.display = 'block';
-        container.innerHTML = cart.map(item => `
-            <div class="cart-item">
-                <img src="${item.image}" alt="">
-                <div style="flex-grow:1; margin:0 10px;">
-                    <div style="font-size:13px; font-weight:600;">${item.name}</div>
-                    <div style="color:var(--primary-color); font-weight:bold; font-size:13px;">৳${item.price} x ${item.qty}</div>
+        if (checkoutForm) checkoutForm.style.display = 'block';
+        if (container) {
+            container.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <img src="${item.image}" alt="${item.name}">
+                    <div style="flex-grow:1; margin:0 10px;">
+                        <div style="font-size:13px; font-weight:600;">${item.name}</div>
+                        <div style="color:var(--primary-color); font-weight:bold; font-size:13px;">৳${item.price} x ${item.qty}</div>
+                    </div>
+                    <div style="display:flex; gap:5px; align-items:center;">
+                        <button onclick="changeQty(${item.id}, -1)" style="padding:2px 8px; cursor:pointer;">-</button>
+                        <span>${item.qty}</span>
+                        <button onclick="changeQty(${item.id}, 1)" style="padding:2px 8px; cursor:pointer;">+</button>
+                    </div>
                 </div>
-                <div>
-                    <button onclick="changeQty(${item.id}, -1)" style="padding:2px 8px; cursor:pointer;">-</button>
-                    <button onclick="changeQty(${item.id}, 1)" style="padding:2px 8px; cursor:pointer;">+</button>
-                </div>
-            </div>
-        `).join('');
+            `).join('');
+        }
     }
     updateTotal();
 }
 
+// কার্ট প্রোডাক্টের সংখ্যা বাড়ানো/কমানো
 function changeQty(id, delta) {
     const item = cart.find(c => c.id === id);
     if (item) {
@@ -150,16 +181,25 @@ function changeQty(id, delta) {
     updateCartUI();
 }
 
+// মোট বিল হিসাব করা
 function updateTotal() {
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const delivery = cart.length > 0 ? parseInt(document.getElementById('deliveryZone').value) : 0;
+    const deliverySelect = document.getElementById('deliveryZone');
+    const delivery = (cart.length > 0 && deliverySelect) ? parseInt(deliverySelect.value) : 0;
     
-    document.getElementById('subTotal').innerText = `৳${subtotal}`;
-    document.getElementById('deliveryCharge').innerText = `৳${delivery}`;
-    document.getElementById('grandTotal').innerText = `৳${subtotal + delivery}`;
+    const subTotalElem = document.getElementById('subTotal');
+    const deliveryChargeElem = document.getElementById('deliveryCharge');
+    const grandTotalElem = document.getElementById('grandTotal');
+
+    if (subTotalElem) subTotalElem.innerText = `৳${subtotal}`;
+    if (deliveryChargeElem) deliveryChargeElem.innerText = `৳${delivery}`;
+    if (grandTotalElem) grandTotalElem.innerText = `৳${subtotal + delivery}`;
 }
 
-// হোয়াটসঅ্যাপে অর্ডার পাঠানো
+/* ==========================================================================
+   ৪. হোয়াটসঅ্যাপে অর্ডার পাঠানো (Send WhatsApp Order)
+   ========================================================================== */
+
 function sendWhatsAppOrder() {
     if (cart.length === 0) {
         alert('আপনার কার্ট ফাঁকা রয়েছে!');
@@ -169,11 +209,12 @@ function sendWhatsAppOrder() {
     const name = document.getElementById('custName').value.trim();
     const phone = document.getElementById('custPhone').value.trim();
     const address = document.getElementById('custAddress').value.trim();
-    const zone = document.getElementById('deliveryZone').options[document.getElementById('deliveryZone').selectedIndex].text;
+    const zoneSelect = document.getElementById('deliveryZone');
+    const zone = zoneSelect.options[zoneSelect.selectedIndex].text;
     const pay = document.getElementById('payMethod').value;
 
     if (!name || !phone || !address) {
-        alert('অনুগ্রহ করে নাম, মোবাইল নম্বর এবং সম্পূর্ণ ঠিকানা পূরণ করুন।');
+        alert('অনুগ্রহ করে আপনার নাম, মোবাইল নম্বর এবং সম্পূর্ণ ঠিকানা প্রবেশ করান।');
         return;
     }
 
@@ -184,7 +225,7 @@ function sendWhatsAppOrder() {
         subtotal += item.price * item.qty;
     });
 
-    const deliveryCharge = parseInt(document.getElementById('deliveryZone').value);
+    const deliveryCharge = parseInt(zoneSelect.value);
     const total = subtotal + deliveryCharge;
 
     let msg = `🛒 *নতুন অর্ডার - রোদেলা মার্ট (Rodela Mart)*\n\n`;
@@ -203,16 +244,24 @@ function sendWhatsAppOrder() {
     window.open(url, '_blank');
 }
 
-// পেজ লোড হলে প্রোডাক্ট প্রদর্শন
-document.addEventListener("DOMContentLoaded", function() {
-    displayProducts(products);
-});
-// পলিসি পপ-আপ ডাটা ও ফাংশন
+/* ==========================================================================
+   ৫. নেভিগেশন ও পলিসি মডাল ফাংশন (Navigation & Policy Modals)
+   ========================================================================== */
+
+// মোবাইল মেনু টগল করা (Open / Close)
+function toggleMenu() {
+    const navMenu = document.getElementById('navMenu');
+    if (navMenu) {
+        navMenu.classList.toggle('active');
+    }
+}
+
+// পলিসি ডাটা
 const policyData = {
     refund: {
         title: "রিটার্ন ও রিফান্ড পলিসি",
         content: `
-            <p><strong>১. রিটার্ন কন্ডিশন:</strong> পণ্য গ্রহণের সময় রাইডার/ডেলিভারি ম্যানের সামনে অবশ্যই প্রোডাক্ট চেক করে নিবেন। কোনো ভাঙা, ড্যামেজ বা ভুল পণ্য পেলে ডেলিভারি ম্যানের কাছেই রিটার্ন করুন।</p> <br>
+            <p><strong>১. রিটার্ন কন্ডিশন:</strong> পণ্য গ্রহণের সময় রাইডার/ডেলিভারি ম্যানের সামনে অবশ্যই প্রোডাক্ট চেক করে নিবেন। কোনো ভাঙা, ড্যামেজ বা ভুল পণ্য পেলে ডেলিভারি ম্যানের কাছেই রিটার্ন করুন।</p><br>
             <p><strong>২. রিফান্ড নিয়মাবলী:</strong> অগ্রিম পেমেন্ট করা থাকলে এবং পণ্য রিটার্ন হলে ৩-৭ কার্যদিবসের মধ্যে বিকাশ/নগদের মাধ্যমে সম্পূর্ণ রিফান্ড করা হবে।</p>
         `
     },
@@ -232,6 +281,7 @@ const policyData = {
     }
 };
 
+// পলিসি পপ-আপ খোলা
 function openPolicyModal(type) {
     const modal = document.getElementById('policyModal');
     const overlay = document.getElementById('policyOverlay');
@@ -239,22 +289,24 @@ function openPolicyModal(type) {
     const content = document.getElementById('policyModalContent');
 
     if (policyData[type]) {
-        title.innerText = policyData[type].title;
-        content.innerHTML = policyData[type].content;
-        modal.style.display = 'flex';
-        overlay.style.display = 'block';
+        if (title) title.innerText = policyData[type].title;
+        if (content) content.innerHTML = policyData[type].content;
+        if (modal) modal.style.display = 'flex';
+        if (overlay) overlay.style.display = 'block';
     }
 }
 
+// পলিসি পপ-আপ বন্ধ করা
 function closePolicyModal() {
-    document.getElementById('policyModal').style.display = 'none';
-    document.getElementById('policyOverlay').style.display = 'none';
-}
-// মোবাইল নেভিগেশন মেনু ওপেন ও ক্লোজ করা
-function toggleMenu() {
-    const navMenu = document.getElementById('navMenu');
-    if (navMenu) {
-        navMenu.classList.toggle('active');
-    }
+    const modal = document.getElementById('policyModal');
+    const overlay = document.getElementById('policyOverlay');
+    if (modal) modal.style.display = 'none';
+    if (overlay) overlay.style.display = 'none';
 }
 
+/* ==========================================================================
+   ৬. পেজ লোড ইভেন্ট (Init on DOM Loaded)
+   ========================================================================== */
+document.addEventListener("DOMContentLoaded", function() {
+    displayProducts(products);
+});
