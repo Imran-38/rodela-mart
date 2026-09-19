@@ -207,3 +207,46 @@ function sendWhatsAppOrder() {
 document.addEventListener("DOMContentLoaded", function() {
     displayProducts(products);
 });
+// পলিসি পপ-আপ ডাটা ও ফাংশন
+const policyData = {
+    refund: {
+        title: "রিটার্ন ও রিফান্ড পলিসি",
+        content: `
+            <p><strong>১. রিটার্ন কন্ডিশন:</strong> পণ্য গ্রহণের সময় রাইডার/ডেলিভারি ম্যানের সামনে অবশ্যই প্রোডাক্ট চেক করে নিবেন। কোনো ভাঙা, ড্যামেজ বা ভুল পণ্য পেলে ডেলিভারি ম্যানের কাছেই রিটার্ন করুন।</p> <br>
+            <p><strong>২. রিফান্ড নিয়মাবলী:</strong> অগ্রিম পেমেন্ট করা থাকলে এবং পণ্য রিটার্ন হলে ৩-৭ কার্যদিবসের মধ্যে বিকাশ/নগদের মাধ্যমে সম্পূর্ণ রিফান্ড করা হবে।</p>
+        `
+    },
+    privacy: {
+        title: "প্রাইভেসি পলিসি",
+        content: `
+            <p>রোদেলা মার্টে আপনার ব্যক্তিগত তথ্যের সুরক্ষা আমাদের অগ্রাধিকার। অর্ডার প্রসেসিং ও ডেলিভারির উদ্দেশ্যে কেবল আপনার নাম, মোবাইল নম্বর এবং ঠিকানা সংগ্রহ করা হয়। আপনার তথ্য অন্য কোনো তৃতীয় পক্ষের কাছে শেয়ার করা হয় না।</p>
+        `
+    },
+    terms: {
+        title: "টার্মস অ্যান্ড কন্ডিশনস",
+        content: `
+            <p>১. প্রোডাক্টের স্টক ও দাম যেকোনো সময় পরিবর্তন হতে পারে।</p>
+            <p>২. অর্ডার কনফার্মেশনের জন্য কাস্টমার কেয়ার থেকে ফোন দেওয়া হতে পারে।</p>
+            <p>৩. ডেলিভারি চার্জ ক্যাশ অন ডেলিভারিতে প্রযোজ্য।</p>
+        `
+    }
+};
+
+function openPolicyModal(type) {
+    const modal = document.getElementById('policyModal');
+    const overlay = document.getElementById('policyOverlay');
+    const title = document.getElementById('policyModalTitle');
+    const content = document.getElementById('policyModalContent');
+
+    if (policyData[type]) {
+        title.innerText = policyData[type].title;
+        content.innerHTML = policyData[type].content;
+        modal.style.display = 'flex';
+        overlay.style.display = 'block';
+    }
+}
+
+function closePolicyModal() {
+    document.getElementById('policyModal').style.display = 'none';
+    document.getElementById('policyOverlay').style.display = 'none';
+}
