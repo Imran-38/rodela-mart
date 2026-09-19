@@ -99,47 +99,48 @@ function searchProducts() {
 }
 
 /* ==========================================================================
-   ৪. পপ-আপ নোটিফিকেশন (Toast Notification Message)
+  /* ==========================================================================
+   ৪. পপ-আপ নোটিফিকেশন (Top Notification Bar)
    ========================================================================== */
 
 function showToast(message) {
     let toast = document.getElementById('toastNotification');
     
-    // যদি এইচটিএমএল-এ নোটিফিকেশন বক্স না থাকে তবে তৈরি করবে
     if (!toast) {
         toast = document.createElement('div');
         toast.id = 'toastNotification';
         toast.style.cssText = `
             position: fixed;
-            bottom: 30px;
-            right: 20px;
+            top: 20px;
+            left: 50%;
+            transform: translate(-50%, -20px);
             background-color: #059669;
             color: #ffffff;
-            padding: 12px 20px;
+            padding: 12px 24px;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             z-index: 99999;
             transition: all 0.3s ease-in-out;
             opacity: 0;
-            transform: translateY(20px);
             pointer-events: none;
             display: flex;
             align-items: center;
             gap: 8px;
+            white-space: nowrap;
         `;
         document.body.appendChild(toast);
     }
 
     toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${message}`;
     toast.style.opacity = '1';
-    toast.style.transform = 'translateY(0)';
+    toast.style.transform = 'translate(-50%, 0)';
 
-    // ২ সেকেন্ড (২০০০ মিলি-সেকেন্ড) পর অটোমেটিক হাইড হয়ে যাবে
+    // ২ সেকেন্ড পর অটোমেটিক গায়েব হয়ে যাবে
     setTimeout(() => {
         toast.style.opacity = '0';
-        toast.style.transform = 'translateY(20px)';
+        toast.style.transform = 'translate(-50%, -20px)';
     }, 2000);
 }
 
