@@ -40,6 +40,20 @@
             
             <!-- Menu Links -->
             <nav class="nav-menu" id="navMenu">
+            <!-- Menu Links -->
+            <nav class="nav-menu" id="navMenu">
+                <!-- Mobile Close (X) Button -->
+                <button class="close-menu-btn" onclick="toggleMenu()" aria-label="Close Menu">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <a href="#" class="nav-link active"><i class="fa-solid fa-house"></i> হোম</a>
+                <a href="javascript:void(0)" onclick="filterCategory('all', event); toggleMenu();" class="nav-link">সব প্রোডাক্ট</a>
+                <a href="javascript:void(0)" onclick="filterCategory('rfl', event); toggleMenu();" class="nav-link">RFL ক্রোকারিজ</a>
+                <a href="javascript:void(0)" onclick="filterCategory('kitchen', event); toggleMenu();" class="nav-link">কিচেন সামগ্রী</a>
+                <a href="javascript:void(0)" onclick="filterCategory('home', event); toggleMenu();" class="nav-link">গৃহস্থালী পণ্য</a>
+            </nav>
+
                 <a href="#" class="nav-link active"><i class="fa-solid fa-house"></i> হোম</a>
                 <a href="javascript:void(0)" onclick="filterCategory('all', event); toggleMenu();" class="nav-link">সব প্রোডাক্ট</a>
                 <a href="javascript:void(0)" onclick="filterCategory('rfl', event); toggleMenu();" class="nav-link">RFL ক্রোকারিজ</a>
