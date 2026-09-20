@@ -1,14 +1,14 @@
 /* ==========================================================================
-   ১. মূল ভ্যারিয়েবল ও গ্লোবাল রিসেট (Variables & Resets)
+   ১. মূল ভ্যারিয়েবল ও গ্লোবাল রিসেট
    ========================================================================== */
 :root {
-    --primary-color: #059669; /* প্রাইমারি এমারেল্ড গ্রিন */
-    --primary-dark: #047857;  /* ডার্ক গ্রিন হোভারের জন্য */
-    --accent-color: #f59e0b;  /* অ্যাকসেন্ট অরেঞ্জ/গোল্ড */
-    --bg-color: #f8fafc;       /* ব্যাকগ্রাউন্ড কালার */
-    --text-color: #1e293b;     /* টেক্সট কালার */
-    --white: #ffffff;          /* হোয়াইট */
-    --border-color: #cbd5e1;   /* বর্ডার কালার */
+    --primary-color: #059669;
+    --primary-dark: #047857;
+    --accent-color: #f59e0b;
+    --bg-color: #f8fafc;
+    --text-color: #1e293b;
+    --white: #ffffff;
+    --border-color: #cbd5e1;
     --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     --border-radius: 12px;
 }
@@ -23,11 +23,11 @@
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
-    padding-bottom: 80px;
+    padding-bottom: 40px;
 }
 
 /* ==========================================================================
-   ২. টপ অ্যানাউন্সমেন্ট বার (Top Announcement Bar)
+   ২. টপ অ্যানাউন্সমেন্ট বার
    ========================================================================== */
 .top-bar {
     background: var(--text-color);
@@ -39,7 +39,7 @@ body {
 }
 
 /* ==========================================================================
-   ৩. হেডার ও নেভিগেশন বার (Header, Logo, Search & Cart)
+   ৩. হেডার ও নেভিগেশন বার
    ========================================================================== */
 header {
     background: var(--white);
@@ -59,7 +59,6 @@ header {
     gap: 10px;
 }
 
-/* মোবাইল মেনু বাটন (Hamburger) */
 .menu-toggle {
     display: none;
     background: none;
@@ -70,7 +69,6 @@ header {
     padding: 5px;
 }
 
-/* লোগো */
 .logo {
     font-size: 20px;
     font-weight: 700;
@@ -82,11 +80,20 @@ header {
     white-space: nowrap;
 }
 
-/* নেভিগেশন মেনু লিংকসমূহ */
 .nav-menu {
     display: flex;
     gap: 8px;
     align-items: center;
+}
+
+.close-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 22px;
+    align-self: flex-end;
+    margin-bottom: 15px;
+    cursor: pointer;
 }
 
 .nav-link {
@@ -108,11 +115,10 @@ header {
     background: #f1f5f9;
 }
 
-/* সার্চ বার */
 .search-box {
     position: relative;
     flex-grow: 1;
-    max-width: 300px;
+    max-width: 280px;
 }
 
 .search-box input {
@@ -138,7 +144,6 @@ header {
     color: #94a3b8;
 }
 
-/* কার্ট আইকন ও কাউন্টার */
 .cart-icon {
     position: relative;
     font-size: 20px;
@@ -164,7 +169,7 @@ header {
 }
 
 /* ==========================================================================
-   ৪. হিরো ব্যানার (Hero Section)
+   ৪. হিরো ব্যানার
    ========================================================================== */
 .hero {
     background: linear-gradient(135deg, #059669 0%, #064e3b 100%);
@@ -180,7 +185,7 @@ header {
 .hero p { font-size: 15px; opacity: 0.9; }
 
 /* ==========================================================================
-   ৫. মেইন লেআউট ও ক্যাটাগরি ফিল্টার (Main Layout & Category Tabs)
+   ৫. মেইন লেআউট ও ক্যাটাগরি ফিল্টার
    ========================================================================== */
 .container {
     max-width: 1200px;
@@ -218,7 +223,7 @@ header {
 }
 
 /* ==========================================================================
-   ৬. প্রোডাক্ট গ্রিড ও প্রোডাক্ট কার্ড (Product Grid & Cards)
+   ৬. প্রোডাক্ট গ্রিড ও কার্ড
    ========================================================================== */
 .product-grid {
     display: grid;
@@ -261,6 +266,7 @@ header {
     object-fit: contain;
     border-radius: 8px;
     margin-bottom: 10px;
+    background-color: #f9fafb;
 }
 
 .product-title {
@@ -309,7 +315,7 @@ header {
 .add-cart-btn:hover { background: var(--primary-dark); }
 
 /* ==========================================================================
-   ৭. শপিং কার্ট স্লাইডার ও অর্ডার ফর্ম (Cart Drawer & Form)
+   ৭. শপিং কার্ট স্লাইডার
    ========================================================================== */
 .cart-drawer {
     position: fixed;
@@ -351,74 +357,6 @@ header {
     margin-top: 30px;
 }
 
-.cart-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #f1f5f9;
-    padding-bottom: 10px;
-}
-
-.cart-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; }
-
-.checkout-form {
-    background: #f8fafc;
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 15px;
-}
-
-.checkout-form h4 {
-    margin-bottom: 10px;
-    color: var(--primary-color);
-}
-
-.form-group { margin-bottom: 10px; }
-.form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 3px; }
-.form-group input, .form-group select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    font-size: 13px;
-}
-
-.cart-footer {
-    padding: 15px;
-    border-top: 1px solid #e2e8f0;
-    background: var(--white);
-}
-
-.summary-line {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-}
-
-.total-line {
-    font-weight: bold;
-    font-size: 18px;
-    color: var(--primary-color);
-    margin-bottom: 15px;
-}
-
-.whatsapp-btn {
-    width: 100%;
-    background: #25D366;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-}
-
 .overlay {
     position: fixed;
     top: 0;
@@ -433,7 +371,7 @@ header {
 .overlay.show { display: block; }
 
 /* ==========================================================================
-   ৮. ফুটার সেকশন (Footer Section)
+   ৮. ফুটার সেকশন
    ========================================================================== */
 .main-footer {
     background-color: #0f172a;
@@ -541,7 +479,7 @@ header {
 }
 
 /* ==========================================================================
-   ৯. পলিসি পপ-আপ উইন্ডো (Policy Modal)
+   ৯. পলিসি পপ-আপ উইন্ডো
    ========================================================================== */
 .policy-modal-overlay {
     position: fixed;
@@ -585,9 +523,8 @@ header {
 }
 
 /* ==========================================================================
-   ১০. ডিভাইস ভিত্তিক রেসপন্সিভ স্টাইল (Media Queries)
+   ১০. রেসপন্সিভ স্টাইল
    ========================================================================== */
-/* ট্যাবলেট ও ডেক্সটপ ভিউ */
 @media (min-width: 768px) {
     .product-grid {
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -597,30 +534,26 @@ header {
     .product-img { height: 170px; }
 }
 
-/* মোবাইল রেসপন্সিভ নেভিগেশন (max-width: 850px) */
 @media (max-width: 850px) {
-    .menu-toggle {
-        display: block;
-    }
+    .menu-toggle { display: block; }
+    .close-menu-btn { display: block; }
 
     .nav-menu {
         position: fixed;
-        top: 55px;
+        top: 0;
         left: -100%;
-        width: 250px;
-        height: calc(100vh - 55px);
+        width: 260px;
+        height: 100vh;
         background: var(--white);
         flex-direction: column;
         align-items: flex-start;
         padding: 20px;
         box-shadow: 4px 0 15px rgba(0,0,0,0.1);
         transition: left 0.3s ease;
-        z-index: 99;
+        z-index: 9999;
     }
 
-    .nav-menu.active {
-        left: 0;
-    }
+    .nav-menu.active { left: 0; }
 
     .nav-link {
         width: 100%;
@@ -629,7 +562,5 @@ header {
         border-bottom: 1px solid #f1f5f9;
     }
 
-    .search-box {
-        max-width: 160px;
-    }
+    .search-box { max-width: 160px; }
 }
