@@ -10,7 +10,7 @@
     <meta name="keywords" content="রোদেলা মার্ট, Rodela Mart, RFL Crockeries, RFL Hotpot, Kitchenware BD, ক্রোকারিজ আইটেম, গৃহস্থালী সামগ্রী">
     <meta name="author" content="Rodela Mart">
 
-    <!-- Open Graph for Facebook Sharing -->
+    <!-- Open Graph for Social Sharing -->
     <meta property="og:title" content="রোদেলা মার্ট - সেরা দামে RFL ক্রোকারিজ ও হোম আইটেম">
     <meta property="og:description" content="অরিজিনাল RFL ক্রোকারিজ ও মানসম্মত কিচেন আইটেম অর্ডার করুন ঘরে বসেই।">
     <meta property="og:type" content="website">
@@ -40,7 +40,6 @@
 
             <!-- Menu Links -->
             <nav class="nav-menu" id="navMenu">
-                <!-- Mobile Close (X) Button -->
                 <button class="close-menu-btn" onclick="toggleMenu()" aria-label="Close Menu">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
@@ -86,7 +85,7 @@
 
         <!-- Product Grid -->
         <div class="product-grid" id="productContainer">
-            <!-- JavaScript-এর মাধ্যমে প্রোডাক্ট লোড হবে -->
+            <!-- JavaScript এর মাধ্যমে প্রোডাক্ট লোড হবে -->
         </div>
     </main>
 
@@ -102,56 +101,6 @@
             <div id="cartItemsContainer">
                 <p class="empty-cart-msg">কার্ট ফাঁকা রয়েছে</p>
             </div>
-
-            <!-- Checkout Form -->
-            <div class="checkout-form" id="checkoutForm" style="display:none;">
-                <h4>ডেলিভারি তথ্য দিন</h4>
-                <div class="form-group">
-                    <label>আপনার নাম *</label>
-                    <input type="text" id="custName" placeholder="সম্পূর্ণ নাম লিখুন">
-                </div>
-                <div class="form-group">
-                    <label>মোবাইল নম্বর *</label>
-                    <input type="tel" id="custPhone" placeholder="017XXXXXXXX">
-                </div>
-                <div class="form-group">
-                    <label>ফুল ঠিকানা *</label>
-                    <input type="text" id="custAddress" placeholder="বাসা/রোড নম্বর, থানা, জেলা">
-                </div>
-                <div class="form-group">
-                    <label>ডেলিভারি এরিয়া *</label>
-                    <select id="deliveryZone" onchange="updateTotal()">
-                        <option value="70">ঢাকার ভেতরে (৳৭০)</option>
-                        <option value="130">ঢাকার বাইরে (৳১৩০)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>পেমেন্ট মেথড</label>
-                    <select id="payMethod">
-                        <option value="Cash on Delivery">ক্যাশ অন ডেলিভারি</option>
-                        <option value="bKash">বিকাশ (bKash)</option>
-                        <option value="Nagad">নগদ (Nagad)</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="cart-footer">
-            <div class="summary-line">
-                <span>পণ্য মূল্য:</span>
-                <span id="subTotal">৳0</span>
-            </div>
-            <div class="summary-line">
-                <span>ডেলিভারি চার্জ:</span>
-                <span id="deliveryCharge">৳0</span>
-            </div>
-            <div class="summary-line total-line">
-                <span>সর্বমোট:</span>
-                <span id="grandTotal">৳0</span>
-            </div>
-            <button class="whatsapp-btn" onclick="sendWhatsAppOrder()">
-                <i class="fa-brands fa-whatsapp fa-xl"></i> হোয়াটসঅ্যাপে অর্ডার করুন
-            </button>
         </div>
     </div>
 
@@ -162,7 +111,7 @@
             <div class="footer-col">
                 <h3 class="footer-title"><i class="fa-solid fa-store"></i> রোদেলা মার্ট</h3>
                 <p class="about-text">
-                    রোদেলা মার্ট (Rodela Mart) হলো অরিজিনাল RFL ক্রোকারিজ ও নিত্যপ্রয়োজনীয় মানসম্মত গৃহস্থালী পণ্যের নির্ভরযোগ্য ই-কমার্স প্রতিষ্ঠান। আমরা সাশ্রয়ী দামে সেরা পণ্য ও দ্রুত ডেলিভারি নিশ্চিত করতে প্রতিশ্রুতিবদ্ধ।
+                    রোদেলা মার্ট (Rodela Mart) হলো অরিজিনাল RFL ক্রোকারিজ ও নিত্যপ্রয়োজনীয় মানসম্মত গৃহস্থালী পণ্যের নির্ভরযোগ্য ই-কমার্স প্রতিষ্ঠান।
                 </p>
                 <div class="social-links">
                     <a href="https://www.facebook.com/share/1NnVX5A81Z/" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
@@ -199,16 +148,14 @@
         </div>
     </footer>
 
-    <!-- Policy Modals (Popup Windows) -->
+    <!-- Policy Modals -->
     <div class="policy-modal-overlay" id="policyOverlay" onclick="closePolicyModal()"></div>
     <div class="policy-modal" id="policyModal">
         <div class="policy-modal-header">
             <h3 id="policyModalTitle">পলিসি শিরোনাম</h3>
             <span onclick="closePolicyModal()" style="cursor:pointer;"><i class="fa-solid fa-xmark fa-lg"></i></span>
         </div>
-        <div class="policy-modal-body" id="policyModalContent">
-            <!-- JavaScript-এর মাধ্যমে পলিসির তথ্য দেখাবে -->
-        </div>
+        <div class="policy-modal-body" id="policyModalContent"></div>
     </div>
 
     <!-- External JavaScript -->
