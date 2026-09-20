@@ -19,7 +19,7 @@ function fixImageUrl(url) {
     if (!url || typeof url !== 'string' || url.trim() === '') {
         return 'https://placehold.co/400x400?text=No+Image';
     }
-    
+
     let cleanUrl = url.trim();
 
     // Google Drive Shareable Links Fix
@@ -29,7 +29,7 @@ function fixImageUrl(url) {
             return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
         }
     }
-    
+
     return cleanUrl;
 }
 
@@ -81,7 +81,7 @@ function displayProducts(items) {
     container.innerHTML = items.map(p => `
         <div class="product-card">
             ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
-            <img src="${p.image}" alt="${p.name}" class="product-img" onerror="this.onerror=null;this.src='https://placehold.co/400x400?text=No+Image';" onclick="openProductModal('${p.id}')" style="cursor:pointer;">
+            <img src="${p.image}" referrerpolicy="no-referrer" alt="${p.name}" class="product-img" onerror="this.onerror=null;this.src='https://placehold.co/400x400?text=No+Image';" onclick="openProductModal('${p.id}')" style="cursor:pointer;">
             <div>
                 <div class="product-title" onclick="openProductModal('${p.id}')" style="cursor:pointer;">${p.name}</div>
                 <div class="price-box">
@@ -140,7 +140,7 @@ function openProductModal(productId) {
     modal.innerHTML = `
         <div style="background: #ffffff; width: 100%; max-width: 500px; max-height: 85vh; overflow-y: auto; border-radius: 12px; padding: 20px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); box-sizing: border-box;">
             <button onclick="closeProductModal()" style="position: absolute; top: 12px; right: 15px; background: #f3f4f6; border: none; font-size: 22px; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; color: #374151;">&times;</button>
-            <img src="${product.image}" onerror="this.onerror=null;this.src='https://placehold.co/400x400?text=No+Image';" alt="${product.name}" style="width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; margin-bottom: 15px; background-color: #f9fafb;">
+            <img src="${product.image}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://placehold.co/400x400?text=No+Image';" alt="${product.name}" style="width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; margin-bottom: 15px; background-color: #f9fafb;">
             <h3 style="font-size: 18px; color: #111827; margin-bottom: 8px;">${product.name}</h3>
             <div style="margin-bottom: 15px; font-size: 18px; font-weight: bold; color: #059669;">
                 ৳${product.price} ${product.oldPrice ? `<span style="text-decoration: line-through; color: #9ca3af; font-size: 14px; margin-left: 8px;">৳${product.oldPrice}</span>` : ''}
@@ -247,8 +247,8 @@ function updateCartUI() {
         container.innerHTML = `
             <div style="padding-bottom:10px;">
                 ${cart.map(item => `
-                    <div style="display:flex; align-items:center; justify-space-between; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid #f3f4f6;">
-                        <img src="${item.image}" onerror="this.onerror=null;this.src='https://placehold.co/400x400?text=No+Image';" style="width:50px; height:50px; object-fit:cover; border-radius:6px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid #f3f4f6;">
+                        <img src="${item.image}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://placehold.co/400x400?text=No+Image';" style="width:50px; height:50px; object-fit:cover; border-radius:6px;">
                         <div style="flex-grow:1; margin:0 12px;">
                             <div style="font-size:13px; font-weight:600; color:#111827;">${item.name}</div>
                             <div style="color:#059669; font-weight:bold; font-size:13px; margin-top:2px;">৳${item.price} x ${item.qty} = ৳${item.price * item.qty}</div>
@@ -368,7 +368,7 @@ function openCheckoutModal() {
                 </div>
 
                 <button onclick="submitModalOrder()" style="width: 100%; margin-top: 10px; padding: 12px; background:#25D366; color:white; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
-                    <i class="fa-brands fa-whatsapp fa-lg"></i> হোয়াটসঅ্যাপে অর্ডার পাঠালুন
+                    <i class="fa-brands fa-whatsapp fa-lg"></i> হোয়াটসঅ্যাপে অর্ডার পাঠান
                 </button>
             </div>
         </div>
@@ -389,7 +389,7 @@ function closeCheckoutModal() {
 function updateModalBill() {
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
     const deliveryZone = Number(document.getElementById('modalDeliveryZone').value) || 60;
-    
+
     document.getElementById('modalSubtotal').innerText = subtotal;
     document.getElementById('modalDeliveryCharge').innerText = deliveryZone;
     document.getElementById('modalGrandTotal').innerText = subtotal + deliveryZone;
@@ -399,132 +399,47 @@ function submitModalOrder() {
     const name = document.getElementById('modalCustName').value.trim();
     const phone = document.getElementById('modalCustPhone').value.trim();
     const address = document.getElementById('modalCustAddress').value.trim();
-    const deliveryZone = document.getElementById('modalDeliveryZone').value;
+    const deliveryZoneSelect = document.getElementById('modalDeliveryZone');
+    const deliveryFee = Number(deliveryZoneSelect ? deliveryZoneSelect.value : 60);
+    const deliveryZoneText = deliveryZoneSelect ? deliveryZoneSelect.options[deliveryZoneSelect.selectedIndex].text : '';
     const payMethod = document.getElementById('modalPayMethod').value;
 
+    // ভ্যালিডেশন
     if (!name || !phone || !address) {
-        alert('অনুগ্রহ করে নাম, মোবাইল নম্বর এবং সম্পূর্ণ ঠিকানা সঠিক ভাবে দিন।');
+        alert('অনুগ্রহ করে আপনার নাম, মোবাইল নম্বর এবং সম্পূর্ণ ঠিকানা দিন!');
         return;
     }
 
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const deliveryCharge = Number(deliveryZone);
-    const grandTotal = subtotal + deliveryCharge;
+    if (cart.length === 0) {
+        alert('আপনার কার্ট ফাঁকা রয়েছে!');
+        return;
+    }
 
-    let message = `🛒 *নতুন অর্ডার - রোদেলা মার্ট*\n\n`;
-    message += `👤 *কাস্টমার তথ্য:*\n`;
-    message += `• নাম: ${name}\n`;
-    message += `• মোবাইল: ${phone}\n`;
-    message += `• ঠিকানা: ${address}\n`;
-    message += `• পেমেন্ট মেথড: ${payMethod}\n\n`;
+    // হোয়াটসঅ্যাপ মেসেজ তৈরি
+    let itemDetails = cart.map((item, index) => `${index + 1}. ${item.name} (${item.qty}টি) = ৳${item.price * item.qty}`).join('\n');
+    let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    let grandTotal = subtotal + deliveryFee;
 
-    message += `📦 *অর্ডার বিবরণ:*\n`;
-    cart.forEach((item, index) => {
-        message += `${index + 1}. ${item.name} x ${item.qty} = ৳${item.price * item.qty}\n`;
-    });
+    let message = `🛒 *নতুন অর্ডার এসেছে*\n\n` +
+                  `👤 *কাস্টমার তথ্য:*\n` +
+                  `• নাম: ${name}\n` +
+                  `• ফোন: ${phone}\n` +
+                  `• ঠিকানা: ${address}\n` +
+                  `• ডেলিভারি এলাকা: ${deliveryZoneText}\n` +
+                  `• পেমেন্ট মেথড: ${payMethod}\n\n` +
+                  `📦 *অর্ডারকৃত পণ্য:*\n${itemDetails}\n\n` +
+                  `💰 *বিল বিবরণ:*\n` +
+                  `• পণ্যের দাম: ৳${subtotal}\n` +
+                  `• ডেলিভারি চার্জ: ৳${deliveryFee}\n` +
+                  `• *সর্বমোট:* ৳${grandTotal}`;
 
-    message += `\n💰 *বিল বিবরণ:*\n`;
-    message += `• পণ্যের দাম: ৳${subtotal}\n`;
-    message += `• ডেলিভারি চার্জ: ৳${deliveryCharge}\n`;
-    message += `• *সর্বমোট বিল: ৳${grandTotal}*\n\n`;
-    message += `ধন্যবাদ!`;
-
-    const encodedMsg = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodedMsg}`;
-
+    // হোয়াটসঅ্যাপ ইউআরএল জেনারেট ও ওপেন
+    let whatsappUrl = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
-    
+
+    // কার্ট খালি ও মডাল বন্ধ করা
     cart = [];
     updateCartUI();
     closeCheckoutModal();
+    showToast('অর্ডার সফলভাবে পাঠানো হয়েছে!');
 }
-
-/* ==========================================================================
-   ৯. নেভিগেশন ও পলিসি মডাল ফাংশনালিটি
-   ========================================================================== */
-function toggleMenu() {
-    const navMenu = document.getElementById('navMenu');
-    if (navMenu) {
-        navMenu.classList.toggle('active');
-    }
-}
-
-function openPolicyModal(type) {
-    const modal = document.getElementById('policyModal');
-    const overlay = document.getElementById('policyOverlay');
-    const title = document.getElementById('policyModalTitle');
-    const content = document.getElementById('policyModalContent');
-
-    if (!modal || !overlay) return;
-
-    if (type === 'refund') {
-        title.innerText = "রিটার্ন ও রিফান্ড পলিসি";
-        content.innerHTML = "<p>পণ্য গ্রহণের সময় ডেলিভারিম্যানের সামনে চেক করে নিন। কোনো ত্রুটি থাকলে তাৎক্ষণিক ফেরত দিন অথবা ২৪ ঘণ্টার মধ্যে আমাদের হেল্পলাইনে যোগাযোগ করুন।</p>";
-    } else if (type === 'privacy') {
-        title.innerText = "প্রাইভেসি পলিসি";
-        content.innerHTML = "<p>আপনার দেওয়া সকল ব্যক্তিগত তথ্য (নাম, ঠিকানা, ফোন নম্বর) শুধুমাত্র ডেলিভারি সম্পন্ন করার কাজে ব্যবহার করা হবে। আপনার তথ্য আমাদের কাছে সম্পূর্ণ সুরক্ষিত।</p>";
-    } else if (type === 'terms') {
-        title.innerText = "টার্মস অ্যান্ড কন্ডিশনস";
-        content.innerHTML = "<p>অর্ডার কনফার্ম করার পর ডেলিভারি চার্জ অগ্রিম বা ক্যাশ অন ডেলিভারিতে পরিশোধ করতে হবে। প্রোডাক্টের সঠিকতা নিশ্চিত করা আমাদের প্রধান লক্ষ্য।</p>";
-    }
-
-    modal.style.display = 'flex';
-    overlay.style.display = 'block';
-}
-
-function closePolicyModal() {
-    const modal = document.getElementById('policyModal');
-    const overlay = document.getElementById('policyOverlay');
-    if (modal) modal.style.display = 'none';
-    if (overlay) overlay.style.display = 'none';
-}
-// আপনার গুগল অ্যাপস স্ক্রিপ্ট বা এপিআই লিংক
-const SHEET_API_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
-
-async function fetchProducts() {
-  try {
-    const response = await fetch(SHEET_API_URL);
-    const data = await response.json();
-    renderProducts(data);
-  } catch (error) {
-    console.error('ডাটা লোড করতে সমস্যা হয়েছে:', error);
-  }
-}
-
-function renderProducts(products) {
-  const container = document.getElementById('product-list');
-  if (!container) return;
-  
-  container.innerHTML = '';
-
-  products.forEach(row => {
-    // ইমেজের সোর্স থেকে অনাকাঙ্ক্ষিত স্পেস দূর করা
-    const cleanImageUrl = row.image ? row.image.trim() : '';
-    const fallbackImage = 'https://via.placeholder.com/250x200?text=No+Image';
-
-    const card = document.createElement('div');
-    card.className = 'product-card';
-
-    card.innerHTML = `
-      ${row.badge ? `<span class="badge">${row.badge}</span>` : ''}
-      <img 
-        src="${cleanImageUrl || fallbackImage}" 
-        referrerpolicy="no-referrer" 
-        onerror="this.onerror=null; this.src='${fallbackImage}';" 
-        alt="${row.name || 'Product Image'}"
-      />
-      <h3 class="product-title">${row.name || ''}</h3>
-      <div class="category">ক্যাটাগরি: ${row.category || ''}</div>
-      <div class="price-area">
-        <span class="price">৳${row.price || 0}</span>
-        ${row.oldPrice ? `<span class="old-price">৳${row.oldPrice}</span>` : ''}
-      </div>
-      <p class="description">${row.description || ''}</p>
-    `;
-
-    container.appendChild(card);
-  });
-}
-
-// পেজ লোড হলে ডাটা ফেস করা শুরু করবে
-window.addEventListener('DOMContentLoaded', fetchProducts);
