@@ -478,3 +478,53 @@ function closePolicyModal() {
     if (modal) modal.style.display = 'none';
     if (overlay) overlay.style.display = 'none';
 }
+// আপনার গুগল অ্যাপস স্ক্রিপ্ট বা এপিআই লিংক
+const SHEET_API_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
+
+async function fetchProducts() {
+  try {
+    const response = await fetch(SHEET_API_URL);
+    const data = await response.json();
+    renderProducts(data);
+  } catch (error) {
+    console.error('ডাটা লোড করতে সমস্যা হয়েছে:', error);
+  }
+}
+
+function renderProducts(products) {
+  const container = document.getElementById('product-list');
+  if (!container) return;
+  
+  container.innerHTML = '';
+
+  products.forEach(row => {
+    // ইমেজের সোর্স থেকে অনাকাঙ্ক্ষিত স্পেস দূর করা
+    const cleanImageUrl = row.image ? row.image.trim() : '';
+    const fallbackImage = 'https://via.placeholder.com/250x200?text=No+Image';
+
+    const card = document.createElement('div');
+    card.className = 'product-card';
+
+    card.innerHTML = `
+      ${row.badge ? `<span class="badge">${row.badge}</span>` : ''}
+      <img 
+        src="${cleanImageUrl || fallbackImage}" 
+        referrerpolicy="no-referrer" 
+        onerror="this.onerror=null; this.src='${fallbackImage}';" 
+        alt="${row.name || 'Product Image'}"
+      />
+      <h3 class="product-title">${row.name || ''}</h3>
+      <div class="category">ক্যাটাগরি: ${row.category || ''}</div>
+      <div class="price-area">
+        <span class="price">৳${row.price || 0}</span>
+        ${row.oldPrice ? `<span class="old-price">৳${row.oldPrice}</span>` : ''}
+      </div>
+      <p class="description">${row.description || ''}</p>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+// পেজ লোড হলে ডাটা ফেস করা শুরু করবে
+window.addEventListener('DOMContentLoaded', fetchProducts);
